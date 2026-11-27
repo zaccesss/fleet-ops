@@ -2,7 +2,9 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.0.0] - 2026-11-27
+
+The first release with a signed source archive. All four systems are documented, tested with generated input as well as examples and gated by 13 required checks.
 
 ### Added
 
@@ -141,6 +143,7 @@ All four systems are in place: the scheduler, governance, the GitLab mirror and 
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[2.0.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v2.0.0
 [1.1.3]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.3
 [1.1.2]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.2
 [1.1.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.1
