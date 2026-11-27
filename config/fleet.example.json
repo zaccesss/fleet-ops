@@ -1,0 +1,62 @@
+{
+  "owners": ["example-user", "example-org"],
+  "exclude": ["example-user/archive-only"],
+  "scheduler": {
+    "timezone": "Europe/London",
+    "jobs": [
+      {
+        "name": "mirror-sweep",
+        "repo": "example-user/fleet-ops",
+        "workflow": "mirror.yml",
+        "at": "23:00",
+        "days": "daily",
+        "route": "containers"
+      },
+      {
+        "name": "backup",
+        "repo": "example-user/fleet-ops",
+        "workflow": "backup.yml",
+        "at": "01:00",
+        "days": "daily",
+        "route": "actions"
+      },
+      {
+        "name": "weekly-digest",
+        "repo": "example-user/fleet-ops",
+        "workflow": "digest.yml",
+        "at": "08:30",
+        "days": ["mon"],
+        "route": "actions"
+      }
+    ]
+  },
+  "governance": {
+    "staleBranchDays": 30,
+    "staleIssueDays": 60,
+    "dependabot": {
+      "autoMerge": ["patch", "minor"],
+      "majorAllowed": ["github_actions"]
+    },
+    "labels": [
+      { "name": "bug", "color": "d73a4a", "description": "Something is not working" },
+      { "name": "enhancement", "color": "a2eeef", "description": "New feature or request" },
+      { "name": "dependencies", "color": "0366d6", "description": "Dependency updates" },
+      { "name": "automerge", "color": "0e8a16", "description": "Merge once checks pass" }
+    ],
+    "settings": {
+      "allow_squash_merge": true,
+      "allow_merge_commit": false,
+      "allow_rebase_merge": false,
+      "delete_branch_on_merge": true,
+      "allow_auto_merge": true,
+      "has_wiki": false
+    }
+  },
+  "mirror": {
+    "gitlabNamespace": "example-group",
+    "sizeWarningMiB": 9000
+  },
+  "backup": {
+    "timeBudgetMinutes": 20
+  }
+}

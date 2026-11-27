@@ -1,0 +1,64 @@
+name: Bug report
+description: Report a wrong merge, a missed job, a failed mirror or a crash
+title: "fix: "
+labels: ["bug"]
+assignees: ["zaccesss"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - Scheduler
+        - Governance
+        - Mirror
+        - Backup
+        - Core (auth, webhooks or config)
+        - ChatOps (slash commands)
+        - Docs or CI
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The release or the commit you ran.
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What ran and what fleet-ops did.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: The log lines around the failure. Remove tokens, installation IDs and any repository name you do not want public first.
+      render: shell
+  - type: dropdown
+    id: ai-use
+    attributes:
+      label: AI use
+      description: "Required. Did AI help you find, test or check this? Write the title and description yourself either way. See the [AI policy](https://github.com/zaccesss/ai-policy). Dictation, translation and spelling tools do not count."
+      options:
+        - No AI was used
+        - "Yes: AI helped me find, test or check it"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: This does not disclose a security issue (those go through SECURITY.md privately).
+          required: true

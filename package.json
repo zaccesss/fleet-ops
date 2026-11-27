@@ -1,0 +1,20 @@
+{
+  "name": "fleet-ops",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Automation for a fleet of GitHub repositories: scheduler, governance, GitLab mirror and backup",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "workers/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261119.1",
+    "typescript": "^5.6.3",
+    "vitest": "^5.1.1"
+  }
+}
