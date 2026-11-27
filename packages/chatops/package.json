@@ -1,0 +1,12 @@
+{
+  "name": "@fleet-ops/chatops",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@fleet-ops/core": "*"
+  }
+}
