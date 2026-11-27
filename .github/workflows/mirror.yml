@@ -67,7 +67,7 @@ jobs:
       - name: Install
         run: |
           pip install --require-hashes -r requirements.txt
-          pip install --no-deps --no-build-isolation .
+          pip install --no-deps --no-build-isolation -e .
 
       - name: Mirror
         env:
