@@ -7,7 +7,7 @@ Automation for running a fleet of GitHub repositories: a scheduler that keeps jo
 [![CodeQL](https://github.com/zaccesss/fleet-ops/actions/workflows/codeql.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/codeql.yml)
 [![Gitleaks](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zaccesss/fleet-ops/badge)](https://scorecard.dev/viewer/?uri=github.com/zaccesss/fleet-ops)
-[![Release](https://img.shields.io/badge/release-v1.1.3-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
+[![Release](https://img.shields.io/badge/release-v2.0.0-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
 [![Licence](https://img.shields.io/badge/licence-PolyForm%20Strict%201.0.0-blue.svg)](LICENSE)
 
 ## The four systems
