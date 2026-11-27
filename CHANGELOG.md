@@ -2,6 +2,14 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Property-based tests with fast-check and Hypothesis: the timetable across every day of 2026, the signature checks, config validation, the Dependabot policy, stale branch pruning, mirror paths and the backup's merge and watermark.
+- Signed releases: the release workflow attaches a source archive, `SHA256SUMS` and a build provenance signed through Sigstore. The runner image gets an attestation in GitHub Container Registry.
+- SECURITY.md shows how to verify a release and the image.
+
 ## [1.1.3] - 2026-11-27
 
 ### Security

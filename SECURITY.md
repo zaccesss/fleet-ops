@@ -18,6 +18,19 @@ fleet-ops acts on GitHub repositories with a GitHub App and pushes copies to Git
 - Findings that need access to the deployed secrets or the GitHub App's private key
 - Rate limits being reached on a very large fleet
 
+## Verifying a release
+
+From 2.0.0, every release carries the source archive, a `SHA256SUMS` file and a build provenance signed through Sigstore by the release workflow. The runner image in GitHub Container Registry has its own attestation.
+
+```sh
+gh release download v2.0.0 --repo zaccesss/fleet-ops
+sha256sum -c SHA256SUMS
+gh attestation verify fleet-ops-v2.0.0.tar.gz --repo zaccesss/fleet-ops
+gh attestation verify oci://ghcr.io/zaccesss/fleet-ops-runner:2.0.0 --repo zaccesss/fleet-ops
+```
+
+A verified attestation proves the file was built by this repository's release workflow from the tagged commit.
+
 ## Supported versions
 
 Only the latest release and the `main` branch get security fixes.

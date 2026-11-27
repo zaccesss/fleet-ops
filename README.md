@@ -56,9 +56,9 @@ Start with [getting started](docs/getting-started.md). The [docs index](docs/REA
 
 ## Quality checks
 
-157 tests run on every pull request: 108 in TypeScript with vitest on Node 22 and 24 and 49 in Python with pytest on Python 3.12 and 3.13. Every network call goes through a fake. Both suites fail if coverage drops under their thresholds.
+184 tests run on every pull request: 125 in TypeScript with vitest on Node 22 and 24 and 59 in Python with pytest on Python 3.12 and 3.13. Property-based tests with fast-check and Hypothesis hunt for inputs that break the scheduling, signing, policy and mirroring rules. Every network call goes through a fake. Both suites fail if coverage drops under their thresholds.
 
-CI also runs Biome, mypy and ruff, the real git binary against local bare repositories, a dry-run bundle of each worker, a build of the runner image, actionlint, a link check, gitleaks, dependency review and CodeQL for Actions, TypeScript and Python. OpenSSF Scorecard checks the repository each week. A version tag publishes the release and the runner image to GitHub Container Registry.
+CI also runs Biome, mypy and ruff, the real git binary against local bare repositories, a dry-run bundle of each worker, a build of the runner image, actionlint, a link check, gitleaks, dependency review and CodeQL for Actions, TypeScript and Python. OpenSSF Scorecard checks the repository each week. A version tag publishes the release with a signed source archive and the runner image to GitHub Container Registry with its own attestation.
 
 ```sh
 npm ci

@@ -20,6 +20,20 @@ No test talks to GitHub, GitLab, Discord or Cloudflare.
 - **Python** uses `FakeSession` and `FakeRunner` from `python/tests/conftest.py`. The session answers HTTP calls the same way. The runner stands in for git and records every command with its environment.
 - Every network client takes its `fetch` or session as an argument for this reason. Nothing reaches for a global client the test cannot replace.
 
+## Property-based tests
+
+Example tests check the cases someone thought of. Property tests state a rule and let a library hunt for an input that breaks it, then shrink any failure to the smallest input that still fails. TypeScript uses [fast-check](https://fast-check.dev) and Python uses [Hypothesis](https://hypothesis.readthedocs.io).
+
+| Rule | Where |
+| --- | --- |
+| A daily job starts exactly once per local day for any time on the grid and any day of 2026, both clock changes included | `workers/scheduler/test/properties.test.ts` |
+| A signed call always verifies. A changed body or a time outside the window is always refused | `packages/core/test/properties.test.ts` |
+| `parseConfig` throws nothing but a `ConfigError` for any JSON at all | `packages/core/test/properties.test.ts` |
+| A version bump is named by the first part that changed. A grouped update with one major npm line is always held. A lookalike author is never merged | `workers/governance/test/properties.test.ts` |
+| Stale branch pruning never picks the default branch or one with an open pull request | `workers/governance/test/properties.test.ts` |
+| A GitLab mirror path is always valid and a private repository is never widened | `python/tests/test_properties.py` |
+| The backup's watermark, merge and staleness order hold for any input. Writing the same data twice changes nothing | `python/tests/test_properties.py` |
+
 ## Things worth knowing
 
 | Test | Why it exists |

@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==9.2.0", "pytest-cov==7.1.0", "ruff==0.17.6", "mypy==2.4.1", "types-requests==2.33.0.20261030"]
+dev = ["pytest==9.2.0", "pytest-cov==7.1.0", "hypothesis==6.170.17", "ruff==0.17.6", "mypy==2.4.1", "types-requests==2.33.0.20261030"]
 
 [build-system]
 requires = ["setuptools>=77"]
