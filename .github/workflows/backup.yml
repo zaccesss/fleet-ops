@@ -86,7 +86,7 @@ jobs:
         working-directory: python
         run: |
           pip install --require-hashes -r requirements.txt
-          pip install --no-deps --no-build-isolation .
+          pip install --no-deps --no-build-isolation -e .
 
       - name: Export
         working-directory: python

@@ -16,7 +16,7 @@ COPY fleet_common ./fleet_common
 COPY mirror ./mirror
 COPY backup ./backup
 RUN pip install --no-cache-dir --require-hashes -r requirements.txt \
-    && pip install --no-cache-dir --no-deps --no-build-isolation .
+    && pip install --no-cache-dir --no-deps --no-build-isolation -e .
 
 USER mirror
 ENTRYPOINT ["python", "-m"]
