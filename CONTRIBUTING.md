@@ -19,10 +19,13 @@ Bug reports and suggestions are welcome. The licence does not allow changed copi
 ```sh
 npm ci
 npm run lint && npm run typecheck && npm run coverage
-cd python && pip install -e ".[dev]" && ruff check . && ruff format --check . && mypy && python -m pytest
+cd python && pip install --require-hashes -r requirements-dev.txt && pip install --no-deps --no-build-isolation -e .
+ruff check . && ruff format --check . && mypy && python -m pytest
 ```
 
-`npm run format` fixes TypeScript formatting and `ruff format .` fixes Python. CI runs the same checks on every pull request plus the rest listed in [the workflows README](.github/workflows/README.md). Tests never call a real API: [testing](docs/testing.md) explains the fakes. A change that lowers coverage below the thresholds fails.
+`npm run format` fixes TypeScript formatting and `ruff format .` fixes Python.
+
+Python dependencies are installed from `requirements.txt` and `requirements-dev.txt`, pinned by hash. After changing a dependency in `pyproject.toml`, regenerate both with the commands at the top of each file (they use `uv pip compile`). CI runs the same checks on every pull request plus the rest listed in [the workflows README](.github/workflows/README.md). Tests never call a real API: [testing](docs/testing.md) explains the fakes. A change that lowers coverage below the thresholds fails.
 
 ## How to contribute
 

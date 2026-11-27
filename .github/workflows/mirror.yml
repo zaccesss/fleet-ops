@@ -65,7 +65,9 @@ jobs:
           permission-metadata: read
 
       - name: Install
-        run: pip install .
+        run: |
+          pip install --require-hashes -r requirements.txt
+          pip install --no-deps --no-build-isolation .
 
       - name: Mirror
         env:

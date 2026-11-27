@@ -30,6 +30,6 @@ Saves what git cannot carry: issues, pull requests, issue comments, review comme
 
 ```sh
 cd python
-pip install .
+pip install --require-hashes -r requirements.txt && pip install --no-deps --no-build-isolation .
 FLEET_CONFIG="$(cat ../config/fleet.json)" GITHUB_TOKEN=... python -m backup --owner example-user --out ../backup-output
 ```

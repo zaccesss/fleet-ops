@@ -17,7 +17,7 @@ This sets up all four systems from scratch. Each step says what it produces, so 
 git clone https://github.com/zaccesss/fleet-ops.git
 cd fleet-ops
 npm ci
-cd python && pip install -e ".[dev]" && cd ..
+cd python && pip install --require-hashes -r requirements-dev.txt && pip install --no-deps --no-build-isolation -e . && cd ..
 ```
 
 ## 1. Write the config
