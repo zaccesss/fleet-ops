@@ -2,6 +2,7 @@
 
 Automation for running a fleet of GitHub repositories: a scheduler that keeps jobs on UK time, governance that keeps every repository tidy, mirroring to GitLab and a backup of issues, pull requests and releases.
 
+[![CI](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml)
 [![Markdown Lint](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml)
 [![Gitleaks](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml)
 [![Licence](https://img.shields.io/badge/licence-PolyForm%20Strict%201.0.0-blue.svg)](LICENSE)
