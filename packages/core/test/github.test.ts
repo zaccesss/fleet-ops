@@ -48,7 +48,7 @@ describe("GitHub", () => {
 
   it("carries the operation, repository, status and body in an error", async () => {
     const f = fakeFetch([{ match: "/repos/a/b", answer: { status: 403, text: "Resource not accessible" } }]);
-    const err: GithubError = await new GitHub("tok", { fetch: f.fetch }).rest("get repo", "a/b", "/repos/a/b").catch((e: GithubError) => e) as GithubError;
+    const err: GithubError = (await new GitHub("tok", { fetch: f.fetch }).rest("get repo", "a/b", "/repos/a/b").catch((e: GithubError) => e)) as GithubError;
     expect(err).toBeInstanceOf(GithubError);
     expect(err).toMatchObject({ op: "get repo", repo: "a/b", status: 403 });
     expect(String(err.message)).not.toContain("tok");

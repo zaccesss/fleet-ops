@@ -50,7 +50,12 @@ describe("handleInteraction", () => {
   it("refuses someone outside the allowlist without running anything", async () => {
     let ran = false;
     const res = await handleInteraction(await signed(command("audit", [], "stranger")), env(), {
-      handlers: handlers({ audit: async () => ((ran = true), "x") }),
+      handlers: handlers({
+        audit: async () => {
+          ran = true;
+          return "x";
+        },
+      }),
       waitUntil: noWait,
     });
     expect(((await res.json()) as { data: { content: string } }).data.content).toMatch(/not allowed/);
@@ -99,7 +104,7 @@ describe("handleInteraction", () => {
       fetch: f.fetch,
     });
     await Promise.all(pending);
-    expect((f.calls[0]?.body as { content: string }).content).toBe("Failed: Error: rate limited");
+    expect((f.calls[0]?.body as { content: string } | undefined)?.content).toBe("Failed: Error: rate limited");
   });
 
   it("does not run an unknown subcommand", async () => {

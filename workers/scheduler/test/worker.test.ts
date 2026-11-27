@@ -22,10 +22,23 @@ function githubRoutes() {
 describe("startJob", () => {
   it("sends a signed call to the runner for a container job", async () => {
     const f = fakeFetch([{ method: "POST", match: "runner.example.invalid", answer: { status: 202, json: {} } }]);
-    const res = await startJob(containerJob, { app, runner: { url: "https://runner.example.invalid/run", secret: SECRET }, fetch: f.fetch, now: () => 1_800_000_000_000 });
+    const res = await startJob(containerJob, {
+      app,
+      runner: { url: "https://runner.example.invalid/run", secret: SECRET },
+      fetch: f.fetch,
+      now: () => 1_800_000_000_000,
+    });
     expect(res).toMatchObject({ route: "containers", ok: true });
     const call = f.calls[0];
-    expect(await verifyRun(SECRET, JSON.stringify(call?.body), call?.headers[RUN_TIMESTAMP_HEADER] ?? null, call?.headers[RUN_SIGNATURE_HEADER] ?? null, 1_800_000_000_000)).toBe(true);
+    expect(
+      await verifyRun(
+        SECRET,
+        JSON.stringify(call?.body),
+        call?.headers[RUN_TIMESTAMP_HEADER] ?? null,
+        call?.headers[RUN_SIGNATURE_HEADER] ?? null,
+        1_800_000_000_000,
+      ),
+    ).toBe(true);
   });
 
   it("falls back to Actions when the runner refuses", async () => {
@@ -45,14 +58,28 @@ describe("startJob", () => {
   it("asks for a token that can only start workflows in the job's repository", async () => {
     const asked: unknown[] = [];
     const f = fakeFetch(githubRoutes());
-    await startJob({ ...containerJob, route: "actions" }, { app: { token: async (...args: unknown[]) => (asked.push(args), "t") }, runner: {}, fetch: f.fetch });
+    await startJob(
+      { ...containerJob, route: "actions" },
+      {
+        app: {
+          token: async (...args: unknown[]) => {
+            asked.push(args);
+            return "t";
+          },
+        },
+        runner: {},
+        fetch: f.fetch,
+      },
+    );
     expect(asked[0]).toEqual(["example-user", { actions: "write", metadata: "read" }, ["fleet-ops"]]);
   });
 });
 
 function deps(overrides: Partial<TickDeps> = {}): TickDeps & { store: ReturnType<typeof memoryStore> } {
   const store = memoryStore();
-  return { config, store, start: { app, runner: {}, fetch: fakeFetch(githubRoutes()).fetch }, ...overrides } as TickDeps & { store: ReturnType<typeof memoryStore> };
+  return { config, store, start: { app, runner: {}, fetch: fakeFetch(githubRoutes()).fetch }, ...overrides } as TickDeps & {
+    store: ReturnType<typeof memoryStore>;
+  };
 }
 
 describe("tick", () => {
@@ -68,7 +95,10 @@ describe("tick", () => {
   });
 
   it("keeps going when one job fails and reports it once", async () => {
-    const both = { ...config, scheduler: { ...config.scheduler, jobs: [{ ...containerJob, name: "bad", repo: "example-user/missing", route: "actions" as const }, containerJob] } };
+    const both = {
+      ...config,
+      scheduler: { ...config.scheduler, jobs: [{ ...containerJob, name: "bad", repo: "example-user/missing", route: "actions" as const }, containerJob] },
+    };
     const f = fakeFetch([
       { match: /\/repos\/example-user\/missing$/, answer: { status: 404, text: "Not Found" } },
       ...githubRoutes(),

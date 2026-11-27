@@ -61,13 +61,17 @@ interface RawInteraction {
 }
 
 export function owners(env: InteractionEnv): Set<string> {
-  return new Set(env.CHATOPS_OWNER_IDS.split(",").map((s) => s.trim()).filter(Boolean));
+  return new Set(
+    env.CHATOPS_OWNER_IDS.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
 }
 
 export function parseInvocation(i: RawInteraction): Invocation | null {
   if (i.data?.name !== FLEET_COMMAND.name) return null;
   const sub = i.data.options?.[0];
-  if (!sub || sub.type !== 1) return null;
+  if (sub?.type !== 1) return null;
   const spec = FLEET_COMMAND.subcommands.find((s) => s.name === sub.name);
   if (!spec) return null;
   const options: Record<string, string | boolean> = {};

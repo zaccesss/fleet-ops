@@ -1,7 +1,7 @@
 // the daily sweep: one batched read of the fleet, then label sync, stale branch pruning and a
 // drift report. Every write goes through the budget. The drift audit only reports.
 
-import { type FleetConfig, GitHub, inScope, type Label } from "@fleet-ops/core";
+import { type FleetConfig, type GitHub, inScope, type Label } from "@fleet-ops/core";
 import { WriteBudget } from "./budget";
 import { type BranchFacts, diffLabels, diffSettings, SETTING_FIELDS, staleBranches } from "./rules";
 
@@ -59,7 +59,11 @@ export async function readFleet(gh: GitHub, login: string): Promise<RepoFacts[]>
         defaultBranch: n.defaultBranchRef?.name ?? "main",
         settings: Object.fromEntries(Object.values(SETTING_FIELDS).map((f) => [f, n[f]])),
         labels: n.labels.nodes,
-        branches: n.refs.nodes.map((r) => ({ name: r.name, lastCommit: r.target.committedDate ?? new Date(0).toISOString(), openPullRequests: r.associatedPullRequests.totalCount })),
+        branches: n.refs.nodes.map((r) => ({
+          name: r.name,
+          lastCommit: r.target.committedDate ?? new Date(0).toISOString(),
+          openPullRequests: r.associatedPullRequests.totalCount,
+        })),
       });
     }
     if (!page.pageInfo.hasNextPage) break;
@@ -93,7 +97,12 @@ export async function sweep(gh: GitHub, config: FleetConfig, repos: RepoFacts[],
     return (list ?? []).some((n) => n.toLowerCase() === full.toLowerCase() || n.toLowerCase() === short);
   };
   const targets = repos.filter(
-    (r) => !r.isArchived && !r.isFork && inScope(config, r.nameWithOwner) && (!opts.only || named(opts.only, r.nameWithOwner)) && !named(opts.except, r.nameWithOwner),
+    (r) =>
+      !r.isArchived &&
+      !r.isFork &&
+      inScope(config, r.nameWithOwner) &&
+      (!opts.only || named(opts.only, r.nameWithOwner)) &&
+      !named(opts.except, r.nameWithOwner),
   );
 
   for (const repo of targets) {
@@ -105,9 +114,15 @@ export async function sweep(gh: GitHub, config: FleetConfig, repos: RepoFacts[],
       if (!budget.spend()) continue;
       const { name, color, description } = change.label;
       if (change.action === "create") {
-        await gh.rest("create label", repo.nameWithOwner, `/repos/${repo.nameWithOwner}/labels`, { method: "POST", body: JSON.stringify({ name, color, description }) });
+        await gh.rest("create label", repo.nameWithOwner, `/repos/${repo.nameWithOwner}/labels`, {
+          method: "POST",
+          body: JSON.stringify({ name, color, description }),
+        });
       } else {
-        await gh.rest("update label", repo.nameWithOwner, `/repos/${repo.nameWithOwner}/labels/${encodeURIComponent(name)}`, { method: "PATCH", body: JSON.stringify({ color, description }) });
+        await gh.rest("update label", repo.nameWithOwner, `/repos/${repo.nameWithOwner}/labels/${encodeURIComponent(name)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ color, description }),
+        });
       }
       report.labelsChanged.push(`${repo.nameWithOwner}: ${change.action} ${name}`);
     }

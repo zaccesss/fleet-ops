@@ -4,13 +4,13 @@ Keeps every repository in the fleet to the same standard. It is a GitHub App web
 
 ## What it does
 
-| Trigger | Action | Token it asks for |
-| --- | --- | --- |
-| A pull request is merged | Deletes its branch, unless the branch is in a fork or is the default branch | `contents: write` on that one repository |
-| A Dependabot pull request opens or updates | Arms auto-merge when the policy allows it. GitHub merges only after the required checks pass | `contents` and `pull_requests` write on that one repository |
-| A pull request gets the `automerge` label | Arms auto-merge the same way | The same |
-| The daily cron at 02:20 UTC | Syncs labels, deletes stale branches and reports settings drift | Read for the batched query, then `contents` and `issues` write |
-| `/fleet audit` | The same report with every write skipped | Read only |
+| Trigger                                    | Action                                                                                       | Token it asks for                                              |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| A pull request is merged                   | Deletes its branch, unless the branch is in a fork or is the default branch                  | `contents: write` on that one repository                       |
+| A Dependabot pull request opens or updates | Arms auto-merge when the policy allows it. GitHub merges only after the required checks pass | `contents` and `pull_requests` write on that one repository    |
+| A pull request gets the `automerge` label  | Arms auto-merge the same way                                                                 | The same                                                       |
+| The daily cron at 02:20 UTC                | Syncs labels, deletes stale branches and reports settings drift                              | Read for the batched query, then `contents` and `issues` write |
+| `/fleet audit`                             | The same report with every write skipped                                                     | Read only                                                      |
 
 ## The Dependabot policy
 

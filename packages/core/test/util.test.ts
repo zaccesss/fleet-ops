@@ -40,6 +40,6 @@ describe("notify", () => {
   it("caps the details list", async () => {
     const f = fakeFetch([{ method: "POST", match: "example.invalid", answer: { status: 200 } }]);
     await notify("https://example.invalid/hook", { job: "x", level: "warn", summary: "y", details: Array.from({ length: 40 }, (_, i) => `r${i}`) }, f.fetch);
-    expect((f.calls[0]?.body as { details: string[] }).details).toHaveLength(25);
+    expect((f.calls[0]?.body as { details: string[] } | undefined)?.details).toHaveLength(25);
   });
 });

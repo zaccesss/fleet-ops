@@ -1,6 +1,6 @@
 {
   "name": "fleet-ops",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "description": "Automation for a fleet of GitHub repositories: scheduler, governance, GitLab mirror and backup",
   "license": "SEE LICENSE IN LICENSE",
@@ -13,13 +13,20 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.9",
     "@cloudflare/workers-types": "^5.20261119.1",
     "@types/node": "^22.20.7",
+    "@vitest/coverage-v8": "^5.1.2",
+    "tsx": "^4.23.15",
     "typescript": "^5.6.3",
     "vitest": "^5.1.1"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "register-commands": "tsx packages/chatops/scripts/register.ts"
   }
 }

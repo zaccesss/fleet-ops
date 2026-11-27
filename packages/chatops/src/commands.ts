@@ -30,7 +30,12 @@ export const FLEET_COMMAND: { name: string; description: string; subcommands: Su
   subcommands: [
     { name: "help", description: "What each subcommand does", options: [], changes: false },
     { name: "status", description: "The last run of every scheduled job", options: [], changes: false },
-    { name: "run", description: "Start one scheduled job now", options: [{ name: "job", description: "The job name from fleet.json", type: "string", required: true }], changes: true },
+    {
+      name: "run",
+      description: "Start one scheduled job now",
+      options: [{ name: "job", description: "The job name from fleet.json", type: "string", required: true }],
+      changes: true,
+    },
     { name: "audit", description: "Report settings drift without changing anything", options: [repos, except], changes: false },
     { name: "sweep", description: "Run the daily governance sweep now", options: [repos, except], changes: true },
     { name: "mirror", description: "Mirror to GitLab now", options: [repos, except], changes: true },

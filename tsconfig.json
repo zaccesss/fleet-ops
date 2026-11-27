@@ -4,5 +4,12 @@
     // node types are only for the tests, which read fixture files from disk
     "types": ["@cloudflare/workers-types", "node"]
   },
-  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "workers/*/src/**/*.ts", "workers/*/test/**/*.ts", "vitest.config.mts"]
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/test/**/*.ts",
+    "packages/*/scripts/**/*.ts",
+    "workers/*/src/**/*.ts",
+    "workers/*/test/**/*.ts",
+    "vitest.config.mts"
+  ]
 }

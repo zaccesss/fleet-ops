@@ -1,6 +1,6 @@
 [project]
 name = "fleet-ops-python"
-version = "1.0.1"
+version = "1.1.0"
 description = "The GitLab mirror and the metadata backup for fleet-ops"
 requires-python = ">=3.12"
 license = "LicenseRef-PolyForm-Strict-1.0.0"
@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest==9.2.0", "ruff==0.17.6"]
+dev = ["pytest==9.2.0", "pytest-cov==7.1.0", "ruff==0.17.6", "mypy==2.4.1", "types-requests==2.33.0.20261030"]
 
 [build-system]
 requires = ["setuptools>=77"]
@@ -21,6 +21,20 @@ include = ["mirror*", "backup*", "fleet_common*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=fleet_common --cov=mirror --cov=backup --cov-report=term-missing --cov-report=xml"
+
+[tool.coverage.run]
+branch = true
+omit = ["*/__main__.py"]
+
+[tool.coverage.report]
+# just under the current figure, so a drop in coverage fails CI
+fail_under = 88
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["fleet_common", "mirror", "backup"]
 
 [tool.ruff]
 line-length = 140

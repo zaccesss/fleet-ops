@@ -14,7 +14,14 @@ function repo(name: string, overrides: Partial<RepoFacts> = {}): RepoFacts {
     isArchived: false,
     isFork: false,
     defaultBranch: "main",
-    settings: { squashMergeAllowed: true, mergeCommitAllowed: false, rebaseMergeAllowed: false, deleteBranchOnMerge: true, autoMergeAllowed: true, hasWikiEnabled: false },
+    settings: {
+      squashMergeAllowed: true,
+      mergeCommitAllowed: false,
+      rebaseMergeAllowed: false,
+      deleteBranchOnMerge: true,
+      autoMergeAllowed: true,
+      hasWikiEnabled: false,
+    },
     labels: config.governance.labels,
     branches: [{ name: "main", lastCommit: "2026-11-26T00:00:00Z", openPullRequests: 0 }],
     ...overrides,
@@ -32,7 +39,13 @@ describe("sweep", () => {
   it("syncs labels, deletes stale branches and reports drift", async () => {
     const f = writes();
     const repos = [
-      repo("site", { labels: [], branches: [{ name: "main", lastCommit: "2026-11-26T00:00:00Z", openPullRequests: 0 }, { name: "feat/old", lastCommit: "2026-08-01T00:00:00Z", openPullRequests: 0 }] }),
+      repo("site", {
+        labels: [],
+        branches: [
+          { name: "main", lastCommit: "2026-11-26T00:00:00Z", openPullRequests: 0 },
+          { name: "feat/old", lastCommit: "2026-08-01T00:00:00Z", openPullRequests: 0 },
+        ],
+      }),
       repo("docs", { settings: { ...repo("x").settings, hasWikiEnabled: true } }),
     ];
     const report = await sweep(new GitHub("t", { fetch: f.fetch }), config, repos, { now });
@@ -50,7 +63,12 @@ describe("sweep", () => {
 
   it("skips archived, forked, excluded and out-of-scope repositories", async () => {
     const f = writes();
-    const repos = [repo("a", { isArchived: true, labels: [] }), repo("b", { isFork: true, labels: [] }), repo("archive-only", { labels: [] }), { ...repo("c", { labels: [] }), nameWithOwner: "stranger/c" }];
+    const repos = [
+      repo("a", { isArchived: true, labels: [] }),
+      repo("b", { isFork: true, labels: [] }),
+      repo("archive-only", { labels: [] }),
+      { ...repo("c", { labels: [] }), nameWithOwner: "stranger/c" },
+    ];
     const report = await sweep(new GitHub("t", { fetch: f.fetch }), config, repos, { now });
     expect(report.repos).toBe(0);
     expect(f.calls).toHaveLength(0);
@@ -84,12 +102,21 @@ describe("readFleet", () => {
       refs: { nodes: [{ name: "main", target: { committedDate: "2026-11-01T00:00:00Z" }, associatedPullRequests: { totalCount: 0 } }] },
     });
     const f = fakeFetch([
-      { method: "POST", match: "/graphql", times: 1, answer: { json: { data: { repositoryOwner: { repositories: { pageInfo: { hasNextPage: true, endCursor: "c1" }, nodes: [node("a")] } } } } } },
-      { method: "POST", match: "/graphql", answer: { json: { data: { repositoryOwner: { repositories: { pageInfo: { hasNextPage: false, endCursor: "c2" }, nodes: [node("b")] } } } } } },
+      {
+        method: "POST",
+        match: "/graphql",
+        times: 1,
+        answer: { json: { data: { repositoryOwner: { repositories: { pageInfo: { hasNextPage: true, endCursor: "c1" }, nodes: [node("a")] } } } } },
+      },
+      {
+        method: "POST",
+        match: "/graphql",
+        answer: { json: { data: { repositoryOwner: { repositories: { pageInfo: { hasNextPage: false, endCursor: "c2" }, nodes: [node("b")] } } } } },
+      },
     ]);
     const repos = await readFleet(new GitHub("t", { fetch: f.fetch }), "example-user");
     expect(repos.map((r) => r.nameWithOwner)).toEqual(["example-user/a", "example-user/b"]);
-    expect((f.calls[1]?.body as { variables: { after: string } }).variables.after).toBe("c1");
+    expect((f.calls[1]?.body as { variables: { after: string } } | undefined)?.variables.after).toBe("c1");
     expect(repos[0]?.branches[0]).toEqual({ name: "main", lastCommit: "2026-11-01T00:00:00Z", openPullRequests: 0 });
   });
 });

@@ -65,7 +65,11 @@ export class GitHub {
   // returns parsed JSON. A 204 gives null, as does a 404 the caller expects (a branch already gone).
   async rest<T>(op: string, repo: string, path: string, init: RequestInit = {}, allow404 = false): Promise<T | null> {
     const url = path.startsWith("http") ? path : `${API}${path}`;
-    const headers = { ...ghHeaders(this.token, this.opts.userAgent), ...(init.body ? { "Content-Type": "application/json" } : {}), ...((init.headers as Record<string, string>) ?? {}) };
+    const headers = {
+      ...ghHeaders(this.token, this.opts.userAgent),
+      ...(init.body ? { "Content-Type": "application/json" } : {}),
+      ...((init.headers as Record<string, string>) ?? {}),
+    };
     const res = await fetchWithRetry(url, { ...init, headers }, this.opts);
     if (res.status === 404 && allow404) return null;
     if (!res.ok) throw new GithubError(op, repo, res.status, await res.text());
@@ -78,7 +82,11 @@ export class GitHub {
   async graphql<T>(op: string, repo: string, query: string, variables: Record<string, unknown> = {}): Promise<T> {
     const res = await fetchWithRetry(
       `${API}/graphql`,
-      { method: "POST", headers: { ...ghHeaders(this.token, this.opts.userAgent), "Content-Type": "application/json" }, body: JSON.stringify({ query, variables }) },
+      {
+        method: "POST",
+        headers: { ...ghHeaders(this.token, this.opts.userAgent), "Content-Type": "application/json" },
+        body: JSON.stringify({ query, variables }),
+      },
       this.opts,
     );
     if (!res.ok) throw new GithubError(op, repo, res.status, await res.text());

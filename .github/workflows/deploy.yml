@@ -1,0 +1,62 @@
+# deploys one or both workers to Cloudflare by hand. It runs in the production environment, so it
+# can be held for an approval and its secrets are only available here.
+
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      worker:
+        description: "Which worker to deploy"
+        type: choice
+        options: [scheduler, governance, both]
+        default: both
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.worker }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # the same checks a pull request passes, so a deploy never ships something untested
+      - name: Check
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: "false"
+          WORKER: ${{ inputs.worker }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in the production environment first."
+            exit 1
+          fi
+          targets=("$WORKER")
+          if [ "$WORKER" = "both" ]; then targets=(scheduler governance); fi
+          for w in "${targets[@]}"; do
+            (cd "workers/$w" && ../../node_modules/.bin/wrangler deploy)
+          done
