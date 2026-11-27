@@ -2,6 +2,12 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-11-27
+
+### Security
+
+- A failed governance webhook answers with a fixed message and a reference ID. The error detail, which could hold an API response body, goes only to the notify hook under that reference. Found by CodeQL (`js/stack-trace-exposure`).
+
 ## [1.0.0] - 2026-11-27
 
 All four systems are in place: the scheduler, governance, the GitLab mirror and the backup.
@@ -82,6 +88,7 @@ All four systems are in place: the scheduler, governance, the GitLab mirror and 
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[1.0.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.1
 [1.0.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.0
 [0.6.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.6.0
 [0.5.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.5.0

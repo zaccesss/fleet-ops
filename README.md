@@ -5,7 +5,7 @@ Automation for running a fleet of GitHub repositories: a scheduler that keeps jo
 [![CI](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml)
 [![Markdown Lint](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml)
 [![Gitleaks](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml)
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
+[![Release](https://img.shields.io/badge/release-v1.0.1-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
 [![Licence](https://img.shields.io/badge/licence-PolyForm%20Strict%201.0.0-blue.svg)](LICENSE)
 
 ## The four systems
@@ -50,7 +50,7 @@ flowchart LR
 
 ## Tests
 
-132 tests run on every pull request: 96 in TypeScript with vitest and 36 in Python with pytest. Every network call goes through a fake. CI also runs the real git binary against local bare repositories, bundles each worker with a wrangler dry run and builds the runner image.
+135 tests run on every pull request: 99 in TypeScript with vitest and 36 in Python with pytest. Every network call goes through a fake. CI also runs the real git binary against local bare repositories, bundles each worker with a wrangler dry run and builds the runner image.
 
 ```sh
 npm ci

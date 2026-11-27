@@ -3,7 +3,7 @@
 import { type Handlers, handleInteraction, helpText } from "@fleet-ops/chatops";
 import { type Fetch, type FleetConfig, GitHub, GitHubApp, notify, parseConfig, signedRunHeaders, verifyGithubWebhook } from "@fleet-ops/core";
 import { formatReport, readFleet, sweep } from "./sweep";
-import { onPullRequest, type PullRequestEvent } from "./webhook";
+import { onPullRequest, type PullRequestEvent, type TokenSource } from "./webhook";
 
 export interface Env {
   FLEET_CONFIG: string;
@@ -39,6 +39,29 @@ async function runSweep(config: FleetConfig, app: GitHubApp, opts: { dryRun: boo
   return reports.join("\n\n");
 }
 
+export interface WebhookDeps {
+  config: FleetConfig;
+  app: TokenSource;
+  report: (ref: string, detail: string) => void;
+  fetch?: Fetch;
+}
+
+// the caller is whoever reached the URL, so a failure answers with a fixed message and a reference.
+// The detail, which can hold an API response body, goes only to the notify hook under that reference.
+export async function handleWebhook(request: Request, secret: string, deps: WebhookDeps): Promise<Response> {
+  const body = await request.text();
+  if (!(await verifyGithubWebhook(secret, body, request.headers.get("X-Hub-Signature-256")))) return json({ error: "invalid signature" }, 401);
+  if (request.headers.get("X-GitHub-Event") !== "pull_request") return json({ skipped: "event not handled" });
+  try {
+    return json(await onPullRequest(JSON.parse(body) as PullRequestEvent, deps.config, deps.app, deps.fetch ? { fetch: deps.fetch } : {}));
+  } catch (err) {
+    const ref = crypto.randomUUID().slice(0, 8);
+    deps.report(ref, err instanceof Error ? err.message : String(err));
+    // a 500 makes GitHub mark the delivery as failed so it can be redelivered
+    return json({ error: "the event could not be handled", ref }, 500);
+  }
+}
+
 export function handlers(env: Env, config: FleetConfig, app: GitHubApp, doFetch: Fetch = fetch): Handlers {
   const list = (v: string | boolean | undefined) => (typeof v === "string" ? v.split(",").map((x) => x.trim()).filter(Boolean) : []);
   const scope = (o: Record<string, string | boolean>) => {
@@ -63,17 +86,11 @@ export default {
     const app = new GitHubApp({ appId: env.GITHUB_APP_ID, privateKey: env.GITHUB_APP_PRIVATE_KEY });
 
     if (request.method === "POST" && url.pathname === "/webhook") {
-      const body = await request.text();
-      if (!(await verifyGithubWebhook(env.GITHUB_WEBHOOK_SECRET, body, request.headers.get("X-Hub-Signature-256")))) return json({ error: "invalid signature" }, 401);
-      if (request.headers.get("X-GitHub-Event") !== "pull_request") return json({ skipped: "event not handled" });
-      try {
-        return json(await onPullRequest(JSON.parse(body) as PullRequestEvent, config, app));
-      } catch (err) {
-        const detail = err instanceof Error ? err.message : String(err);
-        ctx.waitUntil(notify(env.NOTIFY_WEBHOOK_URL, { job: "governance webhook", level: "fail", summary: detail }));
-        // a 500 makes GitHub show the delivery as failed so it can be redelivered
-        return json({ error: detail }, 500);
-      }
+      return handleWebhook(request, env.GITHUB_WEBHOOK_SECRET, {
+        config,
+        app,
+        report: (ref, detail) => ctx.waitUntil(notify(env.NOTIFY_WEBHOOK_URL, { job: "governance webhook", level: "fail", summary: `${ref}: ${detail}` })),
+      });
     }
 
     if (request.method === "POST" && url.pathname === "/interactions") {
