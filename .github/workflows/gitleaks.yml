@@ -1,0 +1,33 @@
+# scan the tree for hard-coded secrets on every pull request. The services handle a GitHub App
+# private key, a GitLab token and a Discord key, so a committed secret must fail loudly. A pinned
+# gitleaks binary keeps the scan reproducible.
+
+name: Gitleaks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install gitleaks
+        run: |
+          curl -sSfL --retry 6 --retry-all-errors --retry-delay 10 --max-time 120 \
+            -o /tmp/gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz"
+          tar -xz -C /tmp -f /tmp/gitleaks.tar.gz gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
+
+      # --redact keeps any finding out of the log.
+      - name: Run gitleaks
+        run: gitleaks detect --no-git --redact --exit-code=1

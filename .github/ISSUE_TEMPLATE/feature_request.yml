@@ -1,0 +1,51 @@
+name: Feature request
+description: Suggest a new job, check or improvement
+title: "feat: "
+labels: ["enhancement"]
+assignees: ["zaccesss"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part?
+      options:
+        - Scheduler
+        - Governance
+        - Mirror
+        - Backup
+        - Core (auth, webhooks or config)
+        - ChatOps (slash commands)
+        - Docs or CI
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What
+      description: A short description of the change.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The problem it solves.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ]
+        - [ ]
+  - type: dropdown
+    id: ai-use
+    attributes:
+      label: AI use
+      description: "Required. Did AI help you find, test or check this? Write the title and description yourself either way. See the [AI policy](https://github.com/zaccesss/ai-policy). Dictation, translation and spelling tools do not count."
+      options:
+        - No AI was used
+        - "Yes: AI helped me find, test or check it"
+    validations:
+      required: true

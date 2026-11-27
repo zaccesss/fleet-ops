@@ -1,0 +1,32 @@
+[project]
+name = "fleet-ops-python"
+version = "0.1.0"
+description = "The GitLab mirror and the metadata backup for fleet-ops"
+requires-python = ">=3.12"
+license = "LicenseRef-PolyForm-Strict-1.0.0"
+dependencies = [
+    # one HTTP client covers the GitHub and GitLab REST APIs; its bundled urllib3 supplies retries
+    "requests==2.34.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "ruff==0.17.6"]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["mirror*", "backup*", "fleet_common*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM"]
+# assert is how pytest checks results
+per-file-ignores = { "tests/*" = ["S101", "S105", "S106"] }

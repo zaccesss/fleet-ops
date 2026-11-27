@@ -1,0 +1,31 @@
+# node and typescript
+node_modules/
+dist/
+*.tsbuildinfo
+
+# wrangler local state
+.wrangler/
+
+# python
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# key material must only ever live in a secret store
+*.pem
+*.key
+
+# local environment files; .env.example stays committed with placeholders
+.env
+.env.*
+!.env.example
+
+# backup output from local runs
+python/backup-output/
+
+# editor and operating system noise
+.DS_Store
+.idea/
+.vscode/
