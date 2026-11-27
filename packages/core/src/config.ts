@@ -65,9 +65,12 @@ export function parseConfig(raw: unknown): FleetConfig {
     if (!Array.isArray(s.jobs)) p.push("scheduler.jobs must be a list");
     else {
       const names = new Set<string>();
-      s.jobs.forEach((j, i) => {
+      for (const [i, j] of s.jobs.entries()) {
         const at = `scheduler.jobs[${i}]`;
-        if (!isObj(j)) return void p.push(`${at} must be an object`);
+        if (!isObj(j)) {
+          p.push(`${at} must be an object`);
+          continue;
+        }
         if (!isStr(j.name)) p.push(`${at}.name is required`);
         else if (names.has(j.name)) p.push(`${at}.name "${j.name}" is used twice`);
         else names.add(j.name);
@@ -77,7 +80,7 @@ export function parseConfig(raw: unknown): FleetConfig {
         const daysOk = j.days === "daily" || (Array.isArray(j.days) && j.days.length > 0 && j.days.every((d) => WEEKDAYS.includes(d as Weekday)));
         if (!daysOk) p.push(`${at}.days must be "daily" or a list such as ["mon", "thu"]`);
         if (j.route !== "containers" && j.route !== "actions") p.push(`${at}.route must be "containers" or "actions"`);
-      });
+      }
     }
   }
 
@@ -87,13 +90,23 @@ export function parseConfig(raw: unknown): FleetConfig {
     if (!isPosInt(g.staleBranchDays)) p.push("governance.staleBranchDays must be a whole number above 0");
     if (!isPosInt(g.staleIssueDays)) p.push("governance.staleIssueDays must be a whole number above 0");
     const d = g.dependabot;
-    if (!isObj(d) || !Array.isArray(d.autoMerge) || !d.autoMerge.every((t) => t === "patch" || t === "minor" || t === "major") || !Array.isArray(d.majorAllowed) || !d.majorAllowed.every(isStr)) {
+    if (
+      !isObj(d) ||
+      !Array.isArray(d.autoMerge) ||
+      !d.autoMerge.every((t) => t === "patch" || t === "minor" || t === "major") ||
+      !Array.isArray(d.majorAllowed) ||
+      !d.majorAllowed.every(isStr)
+    ) {
       p.push("governance.dependabot needs autoMerge (patch, minor or major) and majorAllowed (ecosystem names)");
     }
-    if (!Array.isArray(g.labels) || !g.labels.every((l) => isObj(l) && isStr(l.name) && typeof l.color === "string" && /^[0-9a-f]{6}$/i.test(l.color) && typeof l.description === "string")) {
+    if (
+      !Array.isArray(g.labels) ||
+      !g.labels.every((l) => isObj(l) && isStr(l.name) && typeof l.color === "string" && /^[0-9a-f]{6}$/i.test(l.color) && typeof l.description === "string")
+    ) {
       p.push("governance.labels must be a list of { name, color (6 hex digits), description }");
     }
-    if (!isObj(g.settings) || !Object.values(g.settings).every((v) => typeof v === "boolean")) p.push("governance.settings must map setting names to true or false");
+    if (!isObj(g.settings) || !Object.values(g.settings).every((v) => typeof v === "boolean"))
+      p.push("governance.settings must map setting names to true or false");
   }
 
   const m = raw.mirror;

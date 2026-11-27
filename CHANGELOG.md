@@ -2,6 +2,27 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-27
+
+### Added
+
+- Documentation: a docs index, getting started from an empty account, a reference for every config field and environment variable, the GitHub App's permissions with what each token holds, the slash commands, an operations runbook and a testing guide.
+- READMEs for the core and chatops packages. `ROADMAP.md`, `ACCESSIBILITY.md` and `.github/WORKFLOW.md`.
+- A documentation issue form. EditorConfig plus `.nvmrc` and `.python-version`.
+- `npm run register-commands` registers the `/fleet` command from the same definitions the router uses.
+- CI: Biome lint and formatting, mypy in strict mode, coverage thresholds for vitest and pytest, Node 22 and 24, Python 3.12 and 3.13, actionlint with a checksum check and a lychee link check.
+- A CodeQL workflow for Actions, TypeScript and Python, replacing the default setup that could not see the Python code.
+- Dependency review on pull requests and OpenSSF Scorecard on `main` each week.
+- A release workflow that checks every manifest and the changelog against the tag, then pushes the runner image to GitHub Container Registry with provenance and an SBOM.
+- A manual deploy workflow in a `production` environment.
+- Tests for the governance handlers, the sweep's token choice, the KV store and the shared Python module, bringing the total to 157.
+
+### Changed
+
+- The Python services refuse a config without the owners, mirror and backup sections, with a message naming what is missing.
+- The governance sweep and handlers take an injected `fetch`, so they are tested without a network.
+- Action pins move to the current releases.
+
 ## [1.0.1] - 2026-11-27
 
 ### Security
@@ -88,6 +109,7 @@ All four systems are in place: the scheduler, governance, the GitLab mirror and 
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[1.1.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.0
 [1.0.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.1
 [1.0.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.0
 [0.6.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.6.0

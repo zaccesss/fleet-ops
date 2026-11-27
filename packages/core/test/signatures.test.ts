@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { bytesToHex } from "../src/encoding";
 import {
+  hmacSha256Hex,
   MIN_SECRET_LENGTH,
   RUN_SIGNATURE_HEADER,
   RUN_TIMESTAMP_HEADER,
-  hmacSha256Hex,
-  signRun,
   signedRunHeaders,
+  signRun,
   timingSafeEqual,
   verifyDiscordRequest,
   verifyGithubWebhook,

@@ -1,0 +1,9 @@
+# this repository's own release pages and workflow badges only exist once a change has merged
+# and been tagged, so a pull request that adds one would otherwise fail its own link check
+exclude = [
+  '^https://github\.com/zaccesss/fleet-ops/releases/tag/',
+  '^https://github\.com/zaccesss/fleet-ops/actions/workflows/',
+]
+exclude_path = ["node_modules", "python/.venv"]
+max_retries = 4
+accept = ["200", "206", "429"]

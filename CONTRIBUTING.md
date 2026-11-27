@@ -18,12 +18,11 @@ Bug reports and suggestions are welcome. The licence does not allow changed copi
 
 ```sh
 npm ci
-npm run typecheck
-npm test
-cd python && pip install -e ".[dev]" && ruff check . && pytest
+npm run lint && npm run typecheck && npm run coverage
+cd python && pip install -e ".[dev]" && ruff check . && ruff format --check . && mypy && python -m pytest
 ```
 
-CI runs the same checks on every pull request, plus markdown lint and a gitleaks scan. Tests never call a real API: every network call goes through a fake.
+`npm run format` fixes TypeScript formatting and `ruff format .` fixes Python. CI runs the same checks on every pull request plus the rest listed in [the workflows README](.github/workflows/README.md). Tests never call a real API: [testing](docs/testing.md) explains the fakes. A change that lowers coverage below the thresholds fails.
 
 ## How to contribute
 
@@ -31,7 +30,7 @@ CI runs the same checks on every pull request, plus markdown lint and a gitleaks
 2. Create a branch named `fix/<short-description>` or `feat/<short-description>`.
 3. Make the change with tests and run the checks above.
 4. Add a line under `Unreleased` in [CHANGELOG.md](CHANGELOG.md) for anything a user would notice.
-5. Open a pull request with the template and describe what changed and why.
+5. Open a pull request with the template and describe what changed and why. [The workflow](.github/WORKFLOW.md) covers the rest, releases included.
 
 Code comments explain why something is done, not what the line does.
 

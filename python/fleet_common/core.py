@@ -24,7 +24,8 @@ class PermanentError(Exception):
 
 
 class Session(Protocol):
-    def request(self, method: str, url: str, **kwargs: Any) -> requests.Response: ...
+    # the keywords this code passes; requests.Session and the test fakes both accept them
+    def request(self, method: str, url: str, *, params: Any = ..., json: Any = ..., timeout: Any = ...) -> requests.Response: ...
 
 
 @dataclass(frozen=True)
@@ -75,13 +76,23 @@ def request(session: Session, method: str, url: str, context: str, **kwargs: Any
 
 def load_config(path: str | None = None) -> dict[str, Any]:
     # the same fleet.json the workers read. FLEET_CONFIG holds the JSON itself when the file is
-    # not on disk, which is how a secret store passes it in.
+    # not on disk, which is how a secret store passes it in. The workers validate every field; here
+    # only the parts the Python services read are checked, so a bad file fails with a clear message.
     if path:
-        return json.loads(Path(path).read_text(encoding="utf-8"))
-    raw = os.environ.get("FLEET_CONFIG")
-    if not raw:
-        raise PermanentError("FLEET_CONFIG is not set and no --config path was given")
-    return json.loads(raw)
+        raw = Path(path).read_text(encoding="utf-8")
+    else:
+        raw = os.environ.get("FLEET_CONFIG") or ""
+        if not raw:
+            raise PermanentError("FLEET_CONFIG is not set and no --config path was given")
+    data = json.loads(raw)
+    if not isinstance(data, dict):
+        raise PermanentError("fleet.json is not a JSON object")
+    missing = [key for key in ("owners", "mirror", "backup") if key not in data]
+    if missing:
+        raise PermanentError(f"fleet.json is missing {', '.join(missing)}")
+    if not isinstance(data["owners"], list) or not data["owners"]:
+        raise PermanentError("fleet.json owners must be a non-empty list")
+    return data
 
 
 def in_scope(config: dict[str, Any], full_name: str) -> bool:

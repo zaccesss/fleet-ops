@@ -29,7 +29,12 @@ export type Outcome = { did: string } | { skipped: string };
 // so nothing here merges a pull request whose checks have not run.
 const ENABLE_AUTO_MERGE = `mutation($id: ID!) { enablePullRequestAutoMerge(input: { pullRequestId: $id, mergeMethod: SQUASH }) { clientMutationId } }`;
 
-export async function onPullRequest(event: PullRequestEvent, config: FleetConfig, app: TokenSource, fetchOpts: ConstructorParameters<typeof GitHub>[1] = {}): Promise<Outcome> {
+export async function onPullRequest(
+  event: PullRequestEvent,
+  config: FleetConfig,
+  app: TokenSource,
+  fetchOpts: ConstructorParameters<typeof GitHub>[1] = {},
+): Promise<Outcome> {
   const repo = event.repository.full_name;
   if (!inScope(config, repo)) return { skipped: `${repo} is not managed` };
   const [owner, name] = repo.split("/") as [string, string];
@@ -47,7 +52,9 @@ export async function onPullRequest(event: PullRequestEvent, config: FleetConfig
 
   if (event.action === "opened" || event.action === "synchronize" || event.action === "reopened" || event.action === "labeled") {
     const labelled = pr.labels.some((l) => l.name === "automerge");
-    const decision = labelled ? { merge: true, reason: "automerge label" } : decide({ author: pr.user.login, headRef: pr.head.ref, title: pr.title, body: pr.body }, config.governance.dependabot);
+    const decision = labelled
+      ? { merge: true, reason: "automerge label" }
+      : decide({ author: pr.user.login, headRef: pr.head.ref, title: pr.title, body: pr.body }, config.governance.dependabot);
     if (!decision.merge) return { skipped: decision.reason };
     const gh = new GitHub(await app.token(owner, { contents: "write", pull_requests: "write" }, [name]), fetchOpts);
     await gh.graphql("enable auto-merge", repo, ENABLE_AUTO_MERGE, { id: pr.node_id });

@@ -21,7 +21,12 @@ describe("version parsing", () => {
   });
 
   it("reads every line of a grouped update body and ignores quoted release notes", () => {
-    const body = ["Updates `vitest` from 5.1.1 to 5.1.2", "Updates `wrangler` from 4.165.0 to 4.168.0", "", "> Updates `old` from 1.0.0 to 9.0.0 in the release notes"].join("\n");
+    const body = [
+      "Updates `vitest` from 5.1.1 to 5.1.2",
+      "Updates `wrangler` from 4.165.0 to 4.168.0",
+      "",
+      "> Updates `old` from 1.0.0 to 9.0.0 in the release notes",
+    ].join("\n");
     expect(parseGroupedBumps(body)).toEqual(["patch", "minor"]);
   });
 
@@ -56,7 +61,10 @@ describe("decide", () => {
   });
 
   it("refuses a lookalike branch opened by someone else", () => {
-    expect(decide(pr("dependabot/npm_and_yarn/evil", "Bump x from 1.0.0 to 1.0.1", null, "someone"), policy)).toEqual({ merge: false, reason: "not opened by Dependabot" });
+    expect(decide(pr("dependabot/npm_and_yarn/evil", "Bump x from 1.0.0 to 1.0.1", null, "someone"), policy)).toEqual({
+      merge: false,
+      reason: "not opened by Dependabot",
+    });
   });
 
   it("holds what it cannot read", () => {

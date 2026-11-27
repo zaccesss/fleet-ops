@@ -16,10 +16,10 @@ Starts every job in `fleet.json` at its local time, all year.
 
 ## Routes
 
-| Route | Method | What it does |
-| --- | --- | --- |
-| `/run` | POST | Starts one job now from `{"job": "<name>"}`. It counts as that day's run |
-| `/status` | GET | The last run of every job |
+| Route     | Method | What it does                                                             |
+| --------- | ------ | ------------------------------------------------------------------------ |
+| `/run`    | POST   | Starts one job now from `{"job": "<name>"}`. It counts as that day's run |
+| `/status` | GET    | The last run of every job                                                |
 
 Both need the `X-Run-Timestamp` and `X-Run-Signature` headers from `signedRunHeaders` in `packages/core`.
 

@@ -32,9 +32,10 @@ If you ticked Assisted or Generated, say which parts and how you checked them:
 ## Checklist
 
 - [ ] The change is focused and does one thing.
-- [ ] `npm run typecheck`, `npm test`, `ruff check` and `pytest` pass.
+- [ ] `npm run lint`, `npm run typecheck` and `npm run coverage` pass.
+- [ ] `ruff check`, `ruff format --check`, `mypy` and `pytest` pass in `python/`.
 - [ ] Tests use fakes only and never call a real API.
 - [ ] No token, real account name or real ID is in the change.
-- [ ] The README, docs and CHANGELOG.md are updated if behaviour changed.
+- [ ] The docs and CHANGELOG.md are updated if behaviour changed.
 - [ ] I have read the [contributing guide](https://github.com/zaccesss/fleet-ops/blob/main/CONTRIBUTING.md) and agree to the [code of conduct](https://github.com/zaccesss/fleet-ops/blob/main/CODE_OF_CONDUCT.md).
 - [ ] This does not disclose a security issue (those go through [SECURITY.md](https://github.com/zaccesss/fleet-ops/blob/main/SECURITY.md) privately).

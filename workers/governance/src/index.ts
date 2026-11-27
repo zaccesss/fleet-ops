@@ -23,17 +23,28 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 async function callScheduler(env: Env, method: "GET" | "POST", path: string, payload: unknown, doFetch: Fetch): Promise<string> {
   if (!env.SCHEDULER_URL || !env.RUN_SECRET) return "The scheduler is not configured.";
   const body = method === "POST" ? JSON.stringify(payload) : "";
-  const res = await doFetch(`${env.SCHEDULER_URL}${path}`, { method, headers: await signedRunHeaders(env.RUN_SECRET, body), ...(method === "POST" ? { body } : {}) });
+  const res = await doFetch(`${env.SCHEDULER_URL}${path}`, {
+    method,
+    headers: await signedRunHeaders(env.RUN_SECRET, body),
+    ...(method === "POST" ? { body } : {}),
+  });
   return `${res.status} ${await res.text()}`.slice(0, 1800);
 }
 
 // a sweep over every managed owner, each read with a token that holds only what that step needs
-async function runSweep(config: FleetConfig, app: GitHubApp, opts: { dryRun: boolean; only?: string[]; except?: string[] }) {
+export async function runSweep(
+  config: FleetConfig,
+  app: TokenSource,
+  opts: { dryRun: boolean; only?: string[]; except?: string[] },
+  doFetch?: Fetch,
+): Promise<string> {
   const reports: string[] = [];
+  const net = doFetch ? { fetch: doFetch } : {};
   for (const owner of config.owners) {
-    const reader = new GitHub(await app.token(owner, { metadata: "read", administration: "read", contents: "read", pull_requests: "read" }));
+    const reader = new GitHub(await app.token(owner, { metadata: "read", administration: "read", contents: "read", pull_requests: "read" }), net);
     const repos = await readFleet(reader, owner);
-    const writer = opts.dryRun ? reader : new GitHub(await app.token(owner, { contents: "write", issues: "write" }));
+    // a dry run never asks for a write token at all
+    const writer = opts.dryRun ? reader : new GitHub(await app.token(owner, { contents: "write", issues: "write" }), net);
     reports.push(formatReport(await sweep(writer, config, repos, { dryRun: opts.dryRun, only: opts.only, except: opts.except }), opts.dryRun));
   }
   return reports.join("\n\n");
@@ -62,8 +73,14 @@ export async function handleWebhook(request: Request, secret: string, deps: Webh
   }
 }
 
-export function handlers(env: Env, config: FleetConfig, app: GitHubApp, doFetch: Fetch = fetch): Handlers {
-  const list = (v: string | boolean | undefined) => (typeof v === "string" ? v.split(",").map((x) => x.trim()).filter(Boolean) : []);
+export function handlers(env: Env, config: FleetConfig, app: TokenSource, doFetch: Fetch = fetch): Handlers {
+  const list = (v: string | boolean | undefined) =>
+    typeof v === "string"
+      ? v
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean)
+      : [];
   const scope = (o: Record<string, string | boolean>) => {
     const only = list(o.repos).filter((r) => r.toLowerCase() !== "all");
     return { only: only.length ? only : undefined, except: list(o.except) };
@@ -72,8 +89,8 @@ export function handlers(env: Env, config: FleetConfig, app: GitHubApp, doFetch:
     help: async () => helpText(),
     status: async () => callScheduler(env, "GET", "/status", null, doFetch),
     run: async (inv) => callScheduler(env, "POST", "/run", { job: inv.options.job }, doFetch),
-    audit: async (inv) => runSweep(config, app, { dryRun: true, ...scope(inv.options) }),
-    sweep: async (inv) => runSweep(config, app, { dryRun: false, ...scope(inv.options) }),
+    audit: async (inv) => runSweep(config, app, { dryRun: true, ...scope(inv.options) }, doFetch),
+    sweep: async (inv) => runSweep(config, app, { dryRun: false, ...scope(inv.options) }, doFetch),
     mirror: async () => callScheduler(env, "POST", "/run", { job: "mirror-sweep" }, doFetch),
     backup: async () => callScheduler(env, "POST", "/run", { job: "backup" }, doFetch),
   };

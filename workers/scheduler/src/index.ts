@@ -51,7 +51,11 @@ export async function tick(now: Date, deps: TickDeps): Promise<TickSummary> {
     }
   }
   if (summary.failed.length) {
-    await notify(deps.notifyUrl, { job: "scheduler", level: "fail", summary: `${summary.failed.length} job(s) failed to start`, details: summary.failed }, deps.fetch);
+    await notify(
+      deps.notifyUrl,
+      { job: "scheduler", level: "fail", summary: `${summary.failed.length} job(s) failed to start`, details: summary.failed },
+      deps.fetch,
+    );
   }
   return summary;
 }
@@ -63,7 +67,10 @@ function depsFrom(env: Env): TickDeps {
   return {
     config,
     store: kvStore(env.RUNS),
-    start: { app: new GitHubApp({ appId: env.GITHUB_APP_ID, privateKey: env.GITHUB_APP_PRIVATE_KEY }), runner: { url: env.RUNNER_URL, secret: env.RUNNER_SECRET } },
+    start: {
+      app: new GitHubApp({ appId: env.GITHUB_APP_ID, privateKey: env.GITHUB_APP_PRIVATE_KEY }),
+      runner: { url: env.RUNNER_URL, secret: env.RUNNER_SECRET },
+    },
     notifyUrl: env.NOTIFY_WEBHOOK_URL,
   };
 }

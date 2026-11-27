@@ -32,7 +32,11 @@ function formatter(timeZone: string): Intl.DateTimeFormat {
 }
 
 export function localTime(at: Date, timeZone: string): LocalTime {
-  const parts = Object.fromEntries(formatter(timeZone).formatToParts(at).map((p) => [p.type, p.value]));
+  const parts = Object.fromEntries(
+    formatter(timeZone)
+      .formatToParts(at)
+      .map((p) => [p.type, p.value]),
+  );
   return {
     date: `${parts.year}-${parts.month}-${parts.day}`,
     weekday: (parts.weekday ?? "").toLowerCase().slice(0, 3) as Weekday,

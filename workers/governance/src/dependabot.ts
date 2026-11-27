@@ -75,7 +75,8 @@ export function decide(pr: PullRequestFacts, policy: Policy): Decision {
   if (bump === "unknown") bump = worstBump(parseGroupedBumps(pr.body));
   if (bump === "unknown") return { merge: false, reason: "could not read the versions, held for review" };
   if (bump === "major") {
-    if (policy.autoMerge.includes("major") || policy.majorAllowed.includes(ecosystem)) return { merge: true, reason: `major ${ecosystem} update allowed by policy` };
+    if (policy.autoMerge.includes("major") || policy.majorAllowed.includes(ecosystem))
+      return { merge: true, reason: `major ${ecosystem} update allowed by policy` };
     return { merge: false, reason: `major ${ecosystem} update held for review` };
   }
   if (!policy.autoMerge.includes(bump)) return { merge: false, reason: `${bump} updates are not set to merge` };

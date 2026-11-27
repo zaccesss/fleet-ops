@@ -4,8 +4,10 @@ Automation for running a fleet of GitHub repositories: a scheduler that keeps jo
 
 [![CI](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/ci.yml)
 [![Markdown Lint](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/markdownlint.yml)
+[![CodeQL](https://github.com/zaccesss/fleet-ops/actions/workflows/codeql.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/codeql.yml)
 [![Gitleaks](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/zaccesss/fleet-ops/actions/workflows/gitleaks.yml)
-[![Release](https://img.shields.io/badge/release-v1.0.1-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zaccesss/fleet-ops/badge)](https://scorecard.dev/viewer/?uri=github.com/zaccesss/fleet-ops)
+[![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/zaccesss/fleet-ops/releases/latest)
 [![Licence](https://img.shields.io/badge/licence-PolyForm%20Strict%201.0.0-blue.svg)](LICENSE)
 
 ## The four systems
@@ -44,24 +46,33 @@ flowchart LR
 
 - **Least privilege.** Every job mints its own GitHub App token, valid for an hour, with only the permissions it needs and, for a webhook, only the one repository. Governance never holds administration write, so its drift audit can only report.
 - **Nothing trusted unverified.** GitHub webhooks are checked by HMAC, Discord requests by Ed25519 and calls between workers by a timestamped HMAC that refuses anything more than five minutes old.
-- **Free-tier limits as design inputs.** One sweep stays inside the 50 subrequests a free Workers invocation allows. Scheduled work runs on Containers, which bill by the second, with GitHub Actions as the fallback.
+- **Free-tier limits as design inputs.** One sweep stays inside the 50 subrequests a free Workers invocation allows. Scheduled work can go to a container runner, which bills by the second, with GitHub Actions as the fallback. The runner image is published here. The service that receives the call is on the [roadmap](ROADMAP.md).
 - **Failures are contained.** One repository or job failing never stops the rest. Transient errors are retried and reported as warnings. Only permanent ones fail a run.
 - **Secrets stay out of sight.** Tokens never appear in a URL, a command line or a log. Every value lives in a secret store, with placeholders in [`.env.example`](.env.example).
 
-## Tests
+## Documentation
 
-135 tests run on every pull request: 99 in TypeScript with vitest and 36 in Python with pytest. Every network call goes through a fake. CI also runs the real git binary against local bare repositories, bundles each worker with a wrangler dry run and builds the runner image.
+Start with [getting started](docs/getting-started.md). The [docs index](docs/README.md) lists the rest: every config field, the GitHub App's permissions, the slash commands, an operations runbook and how the tests work.
+
+## Quality checks
+
+157 tests run on every pull request: 108 in TypeScript with vitest on Node 22 and 24 and 49 in Python with pytest on Python 3.12 and 3.13. Every network call goes through a fake. Both suites fail if coverage drops under their thresholds.
+
+CI also runs Biome, mypy and ruff, the real git binary against local bare repositories, a dry-run bundle of each worker, a build of the runner image, actionlint, a link check, gitleaks, dependency review and CodeQL for Actions, TypeScript and Python. OpenSSF Scorecard checks the repository each week. A version tag publishes the release and the runner image to GitHub Container Registry.
 
 ```sh
 npm ci
-npm run typecheck
-npm test
-cd python && pip install -e ".[dev]" && ruff check . && pytest
+npm run lint && npm run typecheck && npm run coverage
+cd python && pip install -e ".[dev]" && ruff check . && mypy && python -m pytest
 ```
 
 ## Configuration
 
-Every service reads one file, [`config/fleet.example.json`](config/fleet.example.json) copied to `config/fleet.json`. It holds the owners, the timetable, the Dependabot policy, the label standard, the settings standard and the GitLab namespace. It is validated at start-up and every problem is listed at once.
+Every service reads one file, [`config/fleet.example.json`](config/fleet.example.json) copied to `config/fleet.json`. It holds the owners, the timetable, the Dependabot policy, the label standard, the settings standard and the GitLab namespace. It is validated at start-up and every problem is listed at once. The [configuration reference](docs/configuration.md) covers each field and every environment variable.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [the workflow](.github/WORKFLOW.md). Security problems go through [SECURITY.md](SECURITY.md). What comes next is in [ROADMAP.md](ROADMAP.md).
 
 ## Licence
 

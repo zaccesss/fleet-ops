@@ -29,3 +29,9 @@ python/backup-output/
 .DS_Store
 .idea/
 .vscode/
+
+# test coverage output
+coverage/
+.coverage
+coverage.xml
+.mypy_cache/
