@@ -2,6 +2,15 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-11-27
+
+### Added
+
+- `packages/chatops`: one `/fleet` slash command with help, status, run, audit, sweep, mirror and backup.
+- Every Discord request is verified with Ed25519 before its body is read. Anyone outside the owner allowlist in `CHATOPS_OWNER_IDS` is refused before a handler runs.
+- Subcommands that change something are deferred and their reply is edited when the work finishes, so a slow job never misses Discord's three second window.
+- The registration payload and the help text are built from the same definitions as the router.
+
 ## [0.2.0] - 2026-11-27
 
 ### Added
@@ -22,5 +31,6 @@ Every notable change to fleet-ops is listed here. The format follows [Keep a Cha
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[0.3.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.3.0
 [0.2.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.2.0
 [0.1.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.1.0
