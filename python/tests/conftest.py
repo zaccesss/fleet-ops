@@ -18,19 +18,29 @@ EXAMPLE_CONFIG = Path(__file__).resolve().parents[2] / "config" / "fleet.example
 
 
 class FakeSession:
-    """Answers requests from a list of (method, url pattern, status, json) routes and records every call."""
+    """Answers requests from (method, url pattern, status, json[, headers]) routes and records every call.
 
-    def __init__(self, routes: list[tuple[str, str, int, Any]]) -> None:
-        self.routes = routes
+    A route can be used once by giving it a "once" key in its headers, which is how paging is faked.
+    """
+
+    def __init__(self, routes: list[tuple[Any, ...]]) -> None:
+        self.routes = list(routes)
         self.calls: list[tuple[str, str, Any]] = []
+        self.params: list[dict[str, Any] | None] = []
 
     def request(self, method: str, url: str, **kwargs: Any) -> requests.Response:
         self.calls.append((method, url, kwargs.get("json")))
-        for m, pattern, status, body in self.routes:
+        self.params.append(kwargs.get("params"))
+        for route in self.routes:
+            m, pattern, status, body = route[:4]
+            headers = dict(route[4]) if len(route) > 4 else {}
             if m == method and re.search(pattern, url):
+                if headers.pop("once", None):
+                    self.routes.remove(route)
                 resp = requests.Response()
                 resp.status_code = status
                 resp._content = json.dumps(body).encode()
+                resp.headers.update(headers)
                 return resp
         raise AssertionError(f"unexpected request: {method} {url}")
 

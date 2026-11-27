@@ -13,6 +13,7 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY fleet_common ./fleet_common
 COPY mirror ./mirror
+COPY backup ./backup
 RUN pip install --no-cache-dir .
 
 USER mirror

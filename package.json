@@ -1,6 +1,6 @@
 {
   "name": "fleet-ops",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Automation for a fleet of GitHub repositories: scheduler, governance, GitLab mirror and backup",
   "license": "SEE LICENSE IN LICENSE",
