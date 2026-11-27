@@ -33,3 +33,12 @@ jobs:
 
       - name: Test
         run: npm test
+
+      # proves each worker still bundles for Cloudflare without deploying anything
+      - name: Bundle the workers
+        env:
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          for w in workers/*/; do
+            (cd "$w" && ../../node_modules/.bin/wrangler deploy --dry-run --outdir dist)
+          done
