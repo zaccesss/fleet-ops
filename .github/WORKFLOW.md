@@ -31,7 +31,8 @@ cd python && ruff check . && ruff format --check . && mypy && python -m pytest
 1. Bump the version in every `package.json` and in `python/pyproject.toml`.
 2. Add a dated section to `CHANGELOG.md` and its link at the end.
 3. Merge that with the change it describes.
-4. Create the tag, for example with `gh release create v1.2.3`. The release workflow checks that every version and the changelog match the tag. It creates the release from the changelog section if it does not exist yet. Then it publishes the runner image to `ghcr.io/zaccesss/fleet-ops-runner`.
+4. Create the tag, for example with `gh release create v1.2.3`. The release workflow checks that every version and the changelog match the tag. It creates the release from the changelog section if it does not exist yet.
+5. The workflow attaches a source archive, `SHA256SUMS` and the signed provenance to the release, then publishes the runner image to `ghcr.io/zaccesss/fleet-ops-runner` with its own attestation. [SECURITY.md](../SECURITY.md#verifying-a-release) shows how to verify both.
 
 ## Deploying
 

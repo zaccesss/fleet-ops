@@ -27,7 +27,7 @@ The checks run on pull requests. The `main` ruleset only accepts changes through
 
 | Workflow | Trigger | What it does |
 | --- | --- | --- |
-| [release.yml](release.yml) | A `v*.*.*` tag | Checks every manifest and the changelog against the tag, creates the release from its changelog section if it is missing and pushes the runner image to `ghcr.io/zaccesss/fleet-ops-runner` with provenance and an SBOM |
+| [release.yml](release.yml) | A `v*.*.*` tag | Checks every manifest and the changelog against the tag, creates the release from its changelog section if it is missing, then attaches a source archive, `SHA256SUMS` and a Sigstore-signed provenance. It pushes the runner image to `ghcr.io/zaccesss/fleet-ops-runner` with provenance, an SBOM and an attestation |
 | [deploy.yml](deploy.yml) | By hand | Checks the code, then deploys the scheduler, governance or both, in the `production` environment |
 
 ## Jobs the scheduler starts
