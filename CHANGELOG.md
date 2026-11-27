@@ -2,6 +2,18 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-11-27
+
+### Added
+
+- `python/mirror`: mirrors every managed repository to GitLab. LFS objects go first, then branches and tags with `--prune`. GitHub's pull request refs are never pushed.
+- A private repository is never published on GitLab. Visibility is set in its own call, apart from the best-effort description and topics.
+- The GitHub and GitLab tokens reach git through `GIT_CONFIG_*` variables, never a URL or an argument.
+- Transient failures are retried and reported as warnings. Permanent ones fail the run. One repository never stops the rest.
+- A storage warning that names the largest projects.
+- `mirror.yml` with one job per owner, started by the scheduler. A Dockerfile for the container route.
+- CI runs ruff and pytest (with a real git run against local bare repositories) and builds the runner image.
+
 ## [0.5.0] - 2026-11-27
 
 ### Added
@@ -52,6 +64,7 @@ Every notable change to fleet-ops is listed here. The format follows [Keep a Cha
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[0.6.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.6.0
 [0.5.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.5.0
 [0.4.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.4.0
 [0.3.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.3.0

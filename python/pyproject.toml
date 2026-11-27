@@ -1,6 +1,6 @@
 [project]
 name = "fleet-ops-python"
-version = "0.1.0"
+version = "0.6.0"
 description = "The GitLab mirror and the metadata backup for fleet-ops"
 requires-python = ">=3.12"
 license = "LicenseRef-PolyForm-Strict-1.0.0"
@@ -23,7 +23,7 @@ include = ["mirror*", "backup*", "fleet_common*"]
 testpaths = ["tests"]
 
 [tool.ruff]
-line-length = 110
+line-length = 140
 target-version = "py312"
 
 [tool.ruff.lint]
