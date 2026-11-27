@@ -1,0 +1,19 @@
+# the scheduler worker. Secrets are set with `wrangler secret put <NAME>`, never written here:
+# GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, RUN_SECRET, RUNNER_URL, RUNNER_SECRET, NOTIFY_WEBHOOK_URL
+# and FLEET_CONFIG (the contents of config/fleet.json).
+
+name = "fleet-scheduler"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# every 15 minutes in UTC. The worker turns each tick into local time itself.
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[kv_namespaces]]
+binding = "RUNS"
+# created with `wrangler kv namespace create RUNS`
+id = "replace-with-your-namespace-id"
+
+[observability]
+enabled = true

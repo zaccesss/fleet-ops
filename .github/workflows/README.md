@@ -4,7 +4,7 @@ Every workflow runs on pull requests only. The `main` ruleset only accepts chang
 
 | Workflow | What it checks |
 | --- | --- |
-| [ci.yml](ci.yml) | The TypeScript type check and the vitest suite |
+| [ci.yml](ci.yml) | The TypeScript type check, the vitest suite and a dry-run bundle of every worker |
 | [markdownlint.yml](markdownlint.yml) | Every markdown file against [.markdownlint.json](../../.markdownlint.json) |
 | [gitleaks.yml](gitleaks.yml) | The tree for hard-coded secrets, with findings redacted from the log |
 
