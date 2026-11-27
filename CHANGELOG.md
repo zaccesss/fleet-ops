@@ -2,6 +2,12 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.2] - 2026-11-27
+
+### Changed
+
+- A `required-checks` ruleset blocks a merge to `main` until all 13 checks pass. The workflow guide and the testing page describe it and the roadmap drops it.
+
 ## [1.1.1] - 2026-11-27
 
 ### Security
@@ -121,6 +127,7 @@ All four systems are in place: the scheduler, governance, the GitLab mirror and 
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[1.1.2]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.2
 [1.1.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.1
 [1.1.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.0
 [1.0.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.1

@@ -44,4 +44,4 @@ The worker entry points are mostly wiring and are covered through the functions 
 
 ## What CI runs
 
-On every pull request: Biome, actionlint, the type check and tests on Node 22 and 24, a dry-run bundle of each worker, ruff, mypy and pytest on Python 3.12 and 3.13, a build of the runner image, a link check, gitleaks, markdown lint, dependency review and CodeQL. The full list is in [the workflows README](../.github/workflows/README.md).
+On every pull request: Biome, actionlint, the type check and tests on Node 22 and 24, a dry-run bundle of each worker, ruff, mypy and pytest on Python 3.12 and 3.13, a build of the runner image, a link check, gitleaks, markdown lint, dependency review and CodeQL. The full list is in [the workflows README](../.github/workflows/README.md). The `required-checks` ruleset makes every one of them a condition for merging.

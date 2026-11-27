@@ -11,7 +11,7 @@ How a change reaches `main` and how a release goes out.
 5. CI, CodeQL, gitleaks, markdown lint and dependency review run on the pull request. Every one must pass.
 6. It is reviewed, then squash-merged. The branch is deleted on merge.
 
-The `main` ruleset only accepts changes through a pull request and refuses force pushes and deletion.
+Two rulesets guard `main`. `protect-main` only accepts changes through a pull request and refuses force pushes and deletion. `required-checks` blocks a merge until all 13 checks pass: Lint, TypeScript on Node 22 and 24, Python 3.12 and 3.13, the container image, the link check, Gitleaks, markdown lint, dependency review and the three CodeQL analyses.
 
 ## Checks before pushing
 
