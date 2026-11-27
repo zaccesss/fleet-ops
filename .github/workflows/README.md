@@ -4,7 +4,8 @@ Every workflow runs on pull requests only. The `main` ruleset only accepts chang
 
 | Workflow | What it checks |
 | --- | --- |
-| [ci.yml](ci.yml) | The TypeScript type check, the vitest suite and a dry-run bundle of every worker |
+| [ci.yml](ci.yml) | The TypeScript type check, the vitest suite and a dry-run bundle of every worker. Ruff and pytest for the Python services. A build of the runner image with a smoke test |
+| [mirror.yml](mirror.yml) | Mirrors every repository to GitLab, one job per owner. Started by the scheduler with `workflow_dispatch` |
 | [markdownlint.yml](markdownlint.yml) | Every markdown file against [.markdownlint.json](../../.markdownlint.json) |
 | [gitleaks.yml](gitleaks.yml) | The tree for hard-coded secrets, with findings redacted from the log |
 

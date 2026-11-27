@@ -1,0 +1,80 @@
+# mirror every managed repository to GitLab. The scheduler starts this with workflow_dispatch at
+# its UK time, so there is no schedule: trigger here. Each owner gets its own job, because an App
+# installation token covers one account.
+
+name: Mirror
+
+on:
+  workflow_dispatch:
+    inputs:
+      repos:
+        description: "Comma separated names (empty for every repository)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+jobs:
+  owners:
+    name: Read owners
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      list: ${{ steps.read.outputs.list }}
+    steps:
+      - id: read
+        env:
+          FLEET_CONFIG: ${{ secrets.FLEET_CONFIG }}
+        run: echo "list=$(jq -c '.owners' <<< "$FLEET_CONFIG")" >> "$GITHUB_OUTPUT"
+
+  mirror:
+    name: Mirror ${{ matrix.owner }}
+    needs: owners
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        owner: ${{ fromJSON(needs.owners.outputs.list) }}
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      # a read-only token for this owner's installation, valid for one hour
+      - name: Mint a GitHub token
+        id: app
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          app-id: ${{ secrets.GITHUB_APP_ID }}
+          private-key: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}
+          owner: ${{ matrix.owner }}
+          permission-contents: read
+          permission-metadata: read
+
+      - name: Install
+        run: pip install .
+
+      - name: Mirror
+        env:
+          FLEET_CONFIG: ${{ secrets.FLEET_CONFIG }}
+          GITHUB_TOKEN: ${{ steps.app.outputs.token }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_URL: ${{ vars.GITLAB_URL || 'https://gitlab.com' }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+          OWNER: ${{ matrix.owner }}
+          REPOS: ${{ inputs.repos }}
+        # values reach the shell as variables, never pasted into the script, so a name cannot inject
+        run: python -m mirror --owner "$OWNER" ${REPOS:+--repos "$REPOS"}
