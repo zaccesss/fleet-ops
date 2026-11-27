@@ -1,0 +1,15 @@
+# the governance worker. Secrets are set with `wrangler secret put <NAME>`, never written here:
+# FLEET_CONFIG, GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, GITHUB_WEBHOOK_SECRET, DISCORD_PUBLIC_KEY,
+# DISCORD_APPLICATION_ID, CHATOPS_OWNER_IDS and optionally SCHEDULER_URL, RUN_SECRET and
+# NOTIFY_WEBHOOK_URL.
+
+name = "fleet-governance"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# the daily sweep at 02:20 UTC, a quiet hour for GitHub's API
+[triggers]
+crons = ["20 2 * * *"]
+
+[observability]
+enabled = true

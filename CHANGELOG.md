@@ -2,6 +2,17 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-11-27
+
+### Added
+
+- `workers/governance`: a GitHub App webhook that deletes merged branches and arms auto-merge on Dependabot updates the policy allows.
+- The Dependabot policy as pure functions: patch and minor merge, major only for allowed ecosystems, grouped updates judged by their worst line and the author checked so a lookalike branch is refused.
+- A daily sweep that reads 25 repositories per GraphQL request, syncs labels without deleting extras and prunes stale branches with no open pull request.
+- A read-only settings drift audit. The worker never holds administration write.
+- A write budget that keeps one run inside the free plan's 50 subrequests and reports what it deferred.
+- The `/fleet` interactions endpoint, wired to the sweep, the audit and the scheduler.
+
 ## [0.4.0] - 2026-11-27
 
 ### Added
@@ -41,6 +52,7 @@ Every notable change to fleet-ops is listed here. The format follows [Keep a Cha
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[0.5.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.5.0
 [0.4.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.4.0
 [0.3.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.3.0
 [0.2.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.2.0
