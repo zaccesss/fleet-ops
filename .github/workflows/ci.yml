@@ -52,6 +52,7 @@ jobs:
         run: |
           docker build -t fleet-runner python
           docker run --rm fleet-runner mirror --help
+          docker run --rm fleet-runner backup --help
 
   typescript:
     name: TypeScript

@@ -1,0 +1,112 @@
+# back up issues, pull requests, comments and releases into a separate data repository. The
+# scheduler starts this with workflow_dispatch. Owners run one at a time, so the shared state file
+# and the push to the data repository never race.
+
+name: Backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Read everything again instead of only what changed"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  owners:
+    name: Read owners
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      list: ${{ steps.read.outputs.list }}
+    steps:
+      - id: read
+        env:
+          FLEET_CONFIG: ${{ secrets.FLEET_CONFIG }}
+        run: echo "list=$(jq -c '.owners' <<< "$FLEET_CONFIG")" >> "$GITHUB_OUTPUT"
+
+  backup:
+    name: Back up ${{ matrix.owner }}
+    needs: owners
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        owner: ${{ fromJSON(needs.owners.outputs.list) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      # read access to this owner's issues and pull requests, nothing else
+      - name: Mint a read token
+        id: read
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ secrets.GITHUB_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}
+          owner: ${{ matrix.owner }}
+          permission-contents: read
+          permission-issues: read
+          permission-pull-requests: read
+          permission-metadata: read
+
+      # write access to the one data repository the export is committed to
+      - name: Mint a write token for the data repository
+        id: write
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ secrets.GITHUB_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GITHUB_APP_PRIVATE_KEY }}
+          owner: ${{ vars.BACKUP_OWNER }}
+          repositories: ${{ vars.BACKUP_REPO }}
+          permission-contents: write
+
+      - name: Checkout the data repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: ${{ vars.BACKUP_OWNER }}/${{ vars.BACKUP_REPO }}
+          token: ${{ steps.write.outputs.token }}
+          path: data
+
+      - name: Install
+        working-directory: python
+        run: pip install .
+
+      - name: Export
+        working-directory: python
+        env:
+          FLEET_CONFIG: ${{ secrets.FLEET_CONFIG }}
+          GITHUB_TOKEN: ${{ steps.read.outputs.token }}
+          NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+          OWNER: ${{ matrix.owner }}
+          FULL: ${{ inputs.full }}
+        run: |
+          args=(--owner "$OWNER" --out ../data)
+          if [ "$FULL" = "true" ]; then args+=(--full); fi
+          python -m backup "${args[@]}"
+
+      # an unchanged export writes identical bytes, so a quiet day makes no commit
+      - name: Commit
+        working-directory: data
+        env:
+          OWNER: ${{ matrix.owner }}
+        run: |
+          git add -A
+          if git diff --cached --quiet; then echo "nothing changed"; exit 0; fi
+          git -c user.name="fleet-ops backup" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "chore: back up $OWNER"
+          git push -q

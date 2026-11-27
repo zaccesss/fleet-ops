@@ -2,6 +2,24 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.0] - 2026-11-27
+
+All four systems are in place: the scheduler, governance, the GitLab mirror and the backup.
+
+### Added
+
+- `python/backup`: exports issues, pull requests, issue comments, review comments and releases as JSON. Only what changed since the newest saved item is fetched. Pull requests are read newest first and paging stops at the saved copy.
+- A full refresh in the first three days of each month (or with `--full`) so deletions are picked up.
+- Sorted, stable JSON, so an unchanged repository writes identical bytes and makes no commit.
+- A time budget that starts with the repositories backed up longest ago and defers the rest to the next run.
+- `backup.yml`, which commits the export to a private data repository one owner at a time.
+- The README diagram, `docs/architecture.md` and four decision records.
+
+### Changed
+
+- The workflows mint tokens with the App's client ID, which replaces the deprecated app ID input.
+- The runner image carries the backup as well as the mirror.
+
 ## [0.6.0] - 2026-11-27
 
 ### Added
@@ -64,6 +82,7 @@ Every notable change to fleet-ops is listed here. The format follows [Keep a Cha
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[1.0.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.0
 [0.6.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.6.0
 [0.5.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.5.0
 [0.4.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v0.4.0
