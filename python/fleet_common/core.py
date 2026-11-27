@@ -25,7 +25,8 @@ class PermanentError(Exception):
 
 class Session(Protocol):
     # the keywords this code passes; requests.Session and the test fakes both accept them
-    def request(self, method: str, url: str, *, params: Any = ..., json: Any = ..., timeout: Any = ...) -> requests.Response: ...
+    def request(self, method: str, url: str, *, params: Any = ..., json: Any = ..., timeout: Any = ...) -> requests.Response:
+        """Send one request and return the response."""
 
 
 @dataclass(frozen=True)

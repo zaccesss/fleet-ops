@@ -2,6 +2,18 @@
 
 Every notable change to fleet-ops is listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.1] - 2026-11-27
+
+### Security
+
+- Python dependencies install from `requirements.txt` and `requirements-dev.txt`, pinned by hash, in CI, the mirror and backup workflows and the runner image. The package itself installs without fetching anything.
+- The runner image's base is pinned by digest. Dependabot now updates it with the rest.
+
+### Fixed
+
+- CodeQL leaves the test folders out, so the tests reading the example config are no longer reported as file data reaching the network.
+- The `Session` Protocol method has a docstring body instead of a bare `...`.
+
 ## [1.1.0] - 2026-11-27
 
 ### Added
@@ -109,6 +121,7 @@ All four systems are in place: the scheduler, governance, the GitLab mirror and 
 - An npm workspace root, a shared TypeScript config and a Python project file.
 - An example config and an example environment file with placeholders only.
 
+[1.1.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.1
 [1.1.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.1.0
 [1.0.1]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.1
 [1.0.0]: https://github.com/zaccesss/fleet-ops/releases/tag/v1.0.0

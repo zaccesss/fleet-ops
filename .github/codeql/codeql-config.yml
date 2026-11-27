@@ -1,0 +1,6 @@
+# the tests read the example config from disk and send it through fake fetch calls, which CodeQL
+# reports as file data reaching the network. Only shipped code is analysed.
+name: fleet-ops CodeQL config
+paths-ignore:
+  - "**/test/**"
+  - python/tests

@@ -33,7 +33,7 @@ Each repository is independent, so one failure never stops the sweep.
 
 ```sh
 cd python
-pip install .
+pip install --require-hashes -r requirements.txt && pip install --no-deps --no-build-isolation .
 FLEET_CONFIG="$(cat ../config/fleet.json)" GITHUB_TOKEN=... GITLAB_TOKEN=... python -m mirror --owner example-user
 ```
 

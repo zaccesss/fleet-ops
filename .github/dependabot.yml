@@ -1,6 +1,7 @@
-# weekly dependency updates for the three ecosystems in this repository: the npm workspace, the
-# Python project and the GitHub Actions the workflows use. Major versions are ignored so a breaking
-# change is always picked up by hand.
+# weekly dependency updates for every ecosystem in this repository: the npm workspace, the Python
+# lock files, the runner image's base and the GitHub Actions the workflows use. Major versions are
+# ignored so a breaking change is always picked up by hand. The base image also ignores minor
+# versions, since those move to a new Python release.
 
 version: 2
 updates:
@@ -43,6 +44,23 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+
+  # the runner image's base, pinned by digest in python/Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/python"
+    schedule:
+      interval: weekly
+      day: sunday
+      time: "18:00"
+      timezone: Europe/London
+    open-pull-requests-limit: 2
+    labels: ["dependencies", "automated"]
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
